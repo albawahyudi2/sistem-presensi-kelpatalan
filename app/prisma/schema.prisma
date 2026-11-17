@@ -1,0 +1,158 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum AttendanceType {
+  IN
+  OUT
+}
+
+enum AttendanceCategory {
+  HADIR
+  DINAS_LUAR
+}
+
+enum AttendanceStatus {
+  ON_TIME
+  LATE
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+}
+
+enum LeaveKind {
+  IZIN
+  SAKIT
+}
+
+enum LoginKind {
+  PEGAWAI
+  ADMIN
+}
+
+model Location {
+  id        String   @id @default(cuid())
+  name      String
+  latitude  Float
+  longitude Float
+  radius    Int
+  createdAt DateTime @default(now())
+
+  users       UserLocation[]
+  attendances Attendance[]
+}
+
+model Admin {
+  id                 String   @id @default(cuid())
+  username           String   @unique
+  name               String
+  passwordHash       String
+  mustChangePassword Boolean  @default(true)
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+
+  decisions Attendance[]
+  leaves    Leave[]
+}
+
+model User {
+  id                 String   @id @default(cuid())
+  nip                String   @unique
+  name               String
+  position           String
+  passwordHash       String
+  mustChangePassword Boolean  @default(true)
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  locations   UserLocation[]
+  attendances Attendance[]
+  leaves      Leave[]
+}
+
+model UserLocation {
+  userId     String
+  locationId String
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  location Location @relation(fields: [locationId], references: [id], onDelete: Restrict)
+
+  @@id([userId, locationId])
+}
+
+model Attendance {
+  id              String             @id @default(cuid())
+  userId          String
+  type            AttendanceType
+  category        AttendanceCategory
+  locationId      String?
+  latitude        Float
+  longitude       Float
+  gpsAccuracy     Float?
+  distanceMeters  Float?
+  photoUrl        String?
+  deviceSignature String
+  notes           String?
+  status          AttendanceStatus
+  lateMinutes     Int                @default(0)
+  isOfflineSync   Boolean            @default(false)
+  capturedAt      DateTime
+  timestamp       DateTime           @default(now())
+  idempotencyKey  String             @unique
+  decidedById     String?
+  decidedAt       DateTime?
+  decisionNote    String?
+  createdAt       DateTime           @default(now())
+
+  user      User      @relation(fields: [userId], references: [id])
+  location  Location? @relation(fields: [locationId], references: [id])
+  decidedBy Admin?    @relation(fields: [decidedById], references: [id])
+
+  @@index([userId, timestamp])
+  @@index([timestamp])
+  @@index([deviceSignature, timestamp])
+}
+
+model Leave {
+  id          String    @id @default(cuid())
+  userId      String
+  date        DateTime  @db.Date
+  kind        LeaveKind
+  notes       String?
+  createdById String
+  createdAt   DateTime  @default(now())
+
+  user      User  @relation(fields: [userId], references: [id])
+  createdBy Admin @relation(fields: [createdById], references: [id])
+
+  @@unique([userId, date])
+}
+
+model Holiday {
+  id          String   @id @default(cuid())
+  name        String
+  date        DateTime @db.Date
+  isRecurring Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([date])
+}
+
+model LoginAttempt {
+  id              String    @id @default(cuid())
+  kind            LoginKind
+  identifier      String
+  success         Boolean
+  deviceSignature String
+  ip              String?
+  createdAt       DateTime  @default(now())
+
+  @@index([kind, identifier, createdAt])
+  @@index([ip, success, createdAt])
+}

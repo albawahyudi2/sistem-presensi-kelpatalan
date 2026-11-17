@@ -1,0 +1,6 @@
+# Jawaban kuesioner SUS (skala 1 = sangat tidak setuju ... 5 = sangat setuju), 10 butir standar.
+# Hapus baris "contoh-*" dan isi 15 responden nyata (pamong, Dukuh, RT).
+id,peran,q1,q2,q3,q4,q5,q6,q7,q8,q9,q10
+contoh-1,Pamong,4,2,4,1,5,2,4,2,4,1
+contoh-2,Dukuh,5,1,5,2,4,1,5,1,5,2
+contoh-3,RT,3,3,4,2,4,2,3,3,4,2

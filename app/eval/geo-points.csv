@@ -1,0 +1,10 @@
+# Uji akurasi geospasial: isi 20 titik nyata di Patalan. Hapus baris "contoh-*".
+# latitude/longitude = koordinat HP saat berdiri di titik uji (baca dari aplikasi/Google Maps).
+# lokasi_lat/lokasi_lon/radius_m = titik pusat dan radius lokasi penugasan di sistem.
+# ekspektasi = DALAM bila titik memang berada dalam radius (diukur dengan meteran/peta), selain itu LUAR.
+# akurasi_gps_m boleh kosong bila tidak diketahui.
+id,keterangan,latitude,longitude,akurasi_gps_m,lokasi_lat,lokasi_lon,radius_m,ekspektasi
+contoh-1,Di depan pintu kantor,-7.928620,110.349450,8,-7.9285979,110.349427,50,DALAM
+contoh-2,Tepi halaman kantor,-7.928200,110.349427,12,-7.9285979,110.349427,50,DALAM
+contoh-3,Jalan 80 m dari kantor,-7.929320,110.349427,10,-7.9285979,110.349427,50,LUAR
+contoh-4,Warung seberang jalan,-7.928000,110.350100,15,-7.9285979,110.349427,50,LUAR
